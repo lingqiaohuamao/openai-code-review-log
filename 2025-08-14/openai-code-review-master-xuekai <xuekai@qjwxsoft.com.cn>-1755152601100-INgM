@@ -1,0 +1,43 @@
+以下是对提供的Git diff记录的代码评审：
+
+### .github/workflows/main-maven-jar.yml
+
+**变更点：**
+- 改变了触发工作流的分支条件，从`master`变为`master-close`。
+
+**评审：**
+- 变更分支条件可能意味着有一个新的分支`master-close`被创建，可能是为了处理特定的合并请求或分支。需要确认这个分支的目的和必要性。
+- 应该在`.github/workflows/main-remote-jar.yml`中同样进行相应的更改，以保持工作流的一致性。
+
+### .github/workflows/main-remote-jar.yml
+
+**变更点：**
+- 新增了一个新的GitHub Actions工作流文件，用于构建和运行`openai-code-review-sdk`。
+
+**评审：**
+- 新增的工作流看起来是为了在推送到`master`分支或创建合并请求时执行代码审查。
+- 工作流中包含了设置JDK、创建库目录、下载依赖、获取环境变量和运行代码审查步骤。
+- 应该确保所有步骤都经过了充分的测试，特别是在生产环境中。
+- `wget`命令用于下载JAR文件，这是一个单次使用命令，可以考虑使用更稳定的方法，如`actions/checkout`结合`actions/cache`步骤来缓存依赖。
+- 在环境变量中使用`secrets`，这是一个好习惯，但需要确保所有的`secrets`都已经被正确设置，并且只有授权的用户可以访问。
+- `OpenAiCodeReviewService`和`ChatGLM`等类没有被具体实现，需要确保这些依赖的类和方法在运行时是可用的。
+
+### openai-code-review-sdk/src/main/java/cn/lqhm/middleware/sdk/OpenAiCodeReview.java
+
+**变更点：**
+- 文件内容被删除，只保留了包声明和日志记录器。
+
+**评审：**
+- 删除了文件的大部分内容，需要确认这是否是故意的，或者是否有误。
+- 如果是故意的，需要了解为什么移除了类实现，以及是否需要在其他地方重构或迁移代码。
+
+### openai-code-review-test/src/test/java/cn/lqhm/middleware/test/ApiTest.java
+
+**变更点：**
+- 在测试类中添加了一个简单的打印语句。
+
+**评审：**
+- 添加的打印语句可能用于调试目的，需要确认它是否已经完成了其任务，或者是否应该被移除。
+- 测试类应该包含更多的单元测试来确保代码的稳定性和功能。
+
+总体来说，这些变更需要进一步的详细说明和测试，以确保代码的质量和稳定性。
